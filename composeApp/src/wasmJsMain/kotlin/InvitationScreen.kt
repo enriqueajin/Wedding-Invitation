@@ -10,6 +10,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.*
@@ -20,7 +21,7 @@ import weddinginvitation.composeapp.generated.resources.josephsophia
 
 @Composable
 fun Invitation() {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Header()
         Body()
         Footer()
@@ -55,7 +56,6 @@ fun Header() {
                 )
                 Text(
                     text = "Carlos Ajín y Diana Guillén",
-                    modifier = Modifier.wrapContentSize(unbounded = true),
                     fontSize = 18.sp,
                     fontFamily = FontFamily.Default,
                 )
@@ -75,7 +75,72 @@ fun Header() {
 
 @Composable
 fun Body() {
+    Box() {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            InvitationText(modifier = Modifier.align(Alignment.CenterHorizontally))
+            CountDown()
+            Ceremony()
+            Celebration()
+            Dresscode()
+            PhotoGallery()
+            Gifts()
+            Attendance()
+        }
+    }
+}
 
+@OptIn(ExperimentalResourceApi::class)
+@Composable
+fun InvitationText(modifier: Modifier) {
+    Spacer(modifier = Modifier.height(45.dp))
+    Text(
+        text = "¡Están invitados!",
+        modifier = modifier,
+        fontSize = 44.sp,
+        fontFamily = FontFamily(
+            Font(
+                resource = Res.font.josephsophia,
+                weight = FontWeight.Bold,
+                style = FontStyle.Normal,
+            )
+        ),
+    )
+    Text(
+        text = "A lo largo de nuestro caminar durante estos 50 años ustedes han sido parte de muchos momentos y nos encantaría compartir esta bendición especial con ustedes nuestra familia y amigos especiales.",
+        modifier = modifier.padding(10.dp),
+        textAlign = TextAlign.Center,
+        fontSize = 14.sp,
+        fontFamily = FontFamily.Default
+    )
+}
+
+@Composable
+fun CountDown() {
+
+}
+
+@Composable
+fun Ceremony() {
+}
+
+@Composable
+fun Celebration() {
+}
+
+@Composable
+fun Dresscode() {
+}
+
+@Composable
+fun PhotoGallery() {
+}
+
+@Composable
+fun Gifts() {
+}
+
+@Composable
+fun Attendance() {
 }
 
 @Composable
