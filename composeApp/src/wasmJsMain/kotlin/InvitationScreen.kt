@@ -1,10 +1,14 @@
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontFamily
@@ -13,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.datetime.*
 import org.jetbrains.compose.resources.*
 import weddinginvitation.composeapp.generated.resources.*
 import weddinginvitation.composeapp.generated.resources.Res
@@ -78,7 +83,7 @@ fun Body() {
     Box() {
         Column(modifier = Modifier.fillMaxWidth()) {
             InvitationText(modifier = Modifier.align(Alignment.CenterHorizontally))
-            CountDown()
+            CountDown(modifier = Modifier.align(Alignment.CenterHorizontally))
             Ceremony()
             Celebration()
             Dresscode()
@@ -115,8 +120,66 @@ fun InvitationText(modifier: Modifier) {
 }
 
 @Composable
-fun CountDown() {
+fun CountDown(modifier: Modifier) {
 
+    val weddingDateTime = LocalDateTime(
+        year = 2024,
+        monthNumber = 8,
+        dayOfMonth = 31,
+        hour = 18,
+        minute = 0,
+        second = 0
+    )
+    Spacer(modifier = Modifier.height(20.dp))
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
+        var daysState by rememberSaveable { mutableLongStateOf(0) }
+        var hoursState by rememberSaveable { mutableLongStateOf(0) }
+        var minutesState by rememberSaveable { mutableLongStateOf(0) }
+        var secondsState by rememberSaveable { mutableLongStateOf(0) }
+
+        CustomCountDownTimer.setTimer(
+            weddingDate = weddingDateTime,
+            onTick = { days, hours, minutes, seconds ->
+                daysState = days
+                hoursState = hours
+                minutesState = minutes
+                secondsState = seconds
+            },
+            onFinish = {
+                // Not yet implemented
+            }
+        )
+
+        val countDownList = listOf(
+            TimeItem(time = daysState.toString(), label = "DÍAS"),
+            TimeItem(time = hoursState.toString(), label = "HORAS"),
+            TimeItem(time = minutesState.toString(), label = "MINUTOS"),
+            TimeItem(time = secondsState.toString(), label = "SEGUNDOS")
+        )
+        countDownList.forEach { CountDownItem(it) }
+    }
+}
+
+@Composable
+fun CountDownItem(timeItem: TimeItem) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            modifier = Modifier
+                .size(50.dp)
+                .background(Color.LightGray)
+                .clip(CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(text = timeItem.time)
+        }
+        Text(
+            text = timeItem.label,
+            fontSize = 10.sp
+        )
+    }
 }
 
 @Composable
@@ -145,5 +208,4 @@ fun Attendance() {
 
 @Composable
 fun Footer() {
-
 }

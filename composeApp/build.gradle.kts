@@ -35,7 +35,12 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(compose.animationGraphics)
             implementation(compose.animation)
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0-RC.2")
         }
+    }
+
+    repositories {
+        mavenCentral()
     }
 }
 
