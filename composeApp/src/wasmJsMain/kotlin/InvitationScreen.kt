@@ -5,7 +5,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,7 +38,7 @@ fun Header() {
     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
         Image(
             painter = painterResource(Res.drawable.header),
-            contentDescription = "Wedding Header",
+            contentDescription = Constants.CONT_DESC_HEADER_IMG_BACKGROUND,
             modifier = Modifier.height(300.dp),
             contentScale = ContentScale.Crop
         )
@@ -49,7 +48,7 @@ fun Header() {
         ) {
             Column {
                 Text(
-                    text = "Nuestra Boda",
+                    text = Constants.HEADER_TITLE,
                     fontSize = 54.sp,
                     fontFamily = FontFamily(
                         Font(
@@ -60,14 +59,14 @@ fun Header() {
                     ),
                 )
                 Text(
-                    text = "Carlos Ajín y Diana Guillén",
+                    text = Constants.HEADER_SPOUSES_NAMES,
                     fontSize = 18.sp,
                     fontFamily = FontFamily.Default,
                 )
             }
             Icon(
                 painter = painterResource(Res.drawable.arrow_down),
-                "Flecha hacia abajo",
+                contentDescription = Constants.CONT_DESC_ARROW_DOWN,
                 tint = Color.White,
                 modifier = Modifier
                     .size(20.dp)
@@ -86,7 +85,7 @@ fun Body() {
             CountDown(modifier = Modifier.align(Alignment.CenterHorizontally))
             Ceremony()
             Celebration()
-            Dresscode()
+            DressCode()
             PhotoGallery()
             Gifts()
             Attendance()
@@ -99,7 +98,7 @@ fun Body() {
 fun InvitationText(modifier: Modifier) {
     Spacer(modifier = Modifier.height(45.dp))
     Text(
-        text = "¡Están invitados!",
+        text = Constants.INVITATION_TITLE,
         modifier = modifier,
         fontSize = 44.sp,
         fontFamily = FontFamily(
@@ -111,7 +110,7 @@ fun InvitationText(modifier: Modifier) {
         ),
     )
     Text(
-        text = "A lo largo de nuestro caminar durante estos 50 años ustedes han sido parte de muchos momentos y nos encantaría compartir esta bendición especial con ustedes nuestra familia y amigos especiales.",
+        text = Constants.INVITATION_DESCRIPTION,
         modifier = modifier.padding(10.dp),
         textAlign = TextAlign.Center,
         fontSize = 14.sp,
@@ -130,34 +129,31 @@ fun CountDown(modifier: Modifier) {
         minute = 0,
         second = 0
     )
+    val customCountDown = CustomCountDownTimer(weddingDateTime)
+    val timeUnits = customCountDown.timeUnits.collectAsState(TimeUnits())
+
     Spacer(modifier = Modifier.height(20.dp))
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
-        var daysState by rememberSaveable { mutableLongStateOf(0) }
-        var hoursState by rememberSaveable { mutableLongStateOf(0) }
-        var minutesState by rememberSaveable { mutableLongStateOf(0) }
-        var secondsState by rememberSaveable { mutableLongStateOf(0) }
-
-        CustomCountDownTimer.setTimer(
-            weddingDate = weddingDateTime,
-            onTick = { days, hours, minutes, seconds ->
-                daysState = days
-                hoursState = hours
-                minutesState = minutes
-                secondsState = seconds
-            },
-            onFinish = {
-                // Not yet implemented
-            }
-        )
-
         val countDownList = listOf(
-            TimeItem(time = daysState.toString(), label = "DÍAS"),
-            TimeItem(time = hoursState.toString(), label = "HORAS"),
-            TimeItem(time = minutesState.toString(), label = "MINUTOS"),
-            TimeItem(time = secondsState.toString(), label = "SEGUNDOS")
+            TimeItem(
+                time = timeUnits.value.days.toString(),
+                label = Constants.DAYS
+            ),
+            TimeItem(
+                time = timeUnits.value.hours.toString(),
+                label = Constants.HOURS
+            ),
+            TimeItem(
+                time = timeUnits.value.minutes.toString(),
+                label = Constants.MINUTES
+            ),
+            TimeItem(
+                time = timeUnits.value.seconds.toString(),
+                label = Constants.SECONDS
+            )
         )
         countDownList.forEach { CountDownItem(it) }
     }
@@ -169,8 +165,8 @@ fun CountDownItem(timeItem: TimeItem) {
         Box(
             modifier = Modifier
                 .size(50.dp)
-                .background(Color.LightGray)
-                .clip(CircleShape),
+                .clip(CircleShape)
+                .background(Color(0xFFBECBDB)),
             contentAlignment = Alignment.Center
         ) {
             Text(text = timeItem.time)
@@ -191,7 +187,7 @@ fun Celebration() {
 }
 
 @Composable
-fun Dresscode() {
+fun DressCode() {
 }
 
 @Composable
