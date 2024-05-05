@@ -114,7 +114,7 @@ fun Body(modifier: Modifier) {
         buttonText = Constants.CEREMONY_BUTTON_LOCATION
     )
     DressCode(modifier)
-    PhotoGallery()
+    PhotoGallery(modifier)
     Gifts()
     Attendance()
 }
@@ -360,8 +360,57 @@ fun DressCode(modifier: Modifier) {
     )
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
-fun PhotoGallery() {
+fun PhotoGallery(modifier: Modifier) {
+    Spacer(Modifier.height(45.dp))
+    GalleryRow(
+        modifier = modifier,
+        photo1 = Res.drawable.photo1,
+        photo2 = Res.drawable.photo4
+    )
+    Spacer(Modifier.height(4.dp))
+    Image(
+        painter = painterResource(Res.drawable.mainphoto),
+        contentDescription = Constants.CONT_DESC_IMAGE_SPOUSES,
+        modifier = modifier.padding(horizontal = 20.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .height(200.dp),
+        contentScale = ContentScale.Crop
+    )
+    Spacer(Modifier.height(4.dp))
+    GalleryRow(
+        modifier = modifier,
+        photo1 = Res.drawable.photo3,
+        photo2 = Res.drawable.photo2
+    )
+}
+
+@OptIn(ExperimentalResourceApi::class)
+@Composable
+fun GalleryRow(modifier: Modifier, photo1: DrawableResource, photo2: DrawableResource) {
+    Row(modifier = modifier.padding(horizontal = 20.dp)) {
+        Image(
+            painter = painterResource(photo1),
+            contentDescription = Constants.CONT_DESC_IMAGE_SPOUSES,
+            modifier = modifier
+                .weight(1f)
+                .clip(RoundedCornerShape(10.dp))
+                .height(200.dp),
+            contentScale = ContentScale.Crop
+        )
+        Spacer(Modifier.width(4.dp))
+        Image(
+            painter = painterResource(photo2),
+            contentDescription = Constants.CONT_DESC_IMAGE_SPOUSES,
+            modifier = modifier
+                .weight(1f)
+                .clip(RoundedCornerShape(10.dp))
+                .height(200.dp),
+            contentScale = ContentScale.Crop
+        )
+    }
 }
 
 @Composable
