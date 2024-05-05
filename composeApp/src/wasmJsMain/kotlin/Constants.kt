@@ -38,4 +38,5 @@ object Constants {
     const val CONT_DESC_ARROW_DOWN = "Icono de flecha hacia abajo"
     const val CONT_DESC_RINGS = "Icono de anillos"
     const val CONT_DESC_DRESSCODE = "Icono del código de vestimenta"
+    const val CONT_DESC_IMAGE_SPOUSES = "Foto de los novios"
 }
