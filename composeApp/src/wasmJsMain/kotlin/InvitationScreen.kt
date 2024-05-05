@@ -115,7 +115,7 @@ fun Body(modifier: Modifier) {
     )
     DressCode(modifier)
     PhotoGallery(modifier)
-    Gifts()
+    Gifts(modifier)
     Attendance()
 }
 
@@ -413,8 +413,58 @@ fun GalleryRow(modifier: Modifier, photo1: DrawableResource, photo2: DrawableRes
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
-fun Gifts() {
+fun Gifts(modifier: Modifier) {
+    Spacer(Modifier.height(65.dp))
+    Icon(
+        painter = painterResource(Res.drawable.gift),
+        contentDescription = Constants.CONT_DESC_ICONO_REGALO,
+        modifier = modifier.size(65.dp)
+    )
+    Spacer(Modifier.height(20.dp))
+    Text(
+        text = Constants.GIFTS,
+        fontSize = 25.sp,
+        modifier = modifier,
+        fontFamily = FontFamily(
+            Font(
+                resource = Res.font.nexaheavy,
+                weight = FontWeight.Bold,
+                style = FontStyle.Normal,
+            )
+        ),
+    )
+    Text(
+        text = Constants.GIFTS_DESCRIPTION,
+        modifier = modifier.padding(vertical = 15.dp, horizontal = 45.dp),
+        fontSize = 16.sp,
+        fontFamily = FontFamily.Default,
+        textAlign = TextAlign.Center
+    )
+    Button(
+        onClick = {},
+        modifier = modifier.padding(12.dp),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color(0xFF408df7),
+            contentColor = Color.White
+        ),
+        shape = RoundedCornerShape(20)
+    ) {
+        Text(
+            text = Constants.GIFTS_BUTTON_TEXT,
+            fontSize = 12.sp,
+            modifier = modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+            fontFamily = FontFamily(
+                Font(
+                    resource = Res.font.nexaextralight,
+                    weight = FontWeight.Normal,
+                    style = FontStyle.Normal,
+                )
+            )
+        )
+    }
+
 }
 
 @Composable
