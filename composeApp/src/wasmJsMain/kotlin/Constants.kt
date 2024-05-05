@@ -33,10 +33,16 @@ object Constants {
     const val DRESSCODE = "DRESSCODE"
     const val DRESSCODE_DESCRIPTION = "Formal"
 
+    // Gifts
+    const val GIFTS = "REGALOS"
+    const val GIFTS_DESCRIPTION = "Lo más importante es tu presencia, pero si deseas hacernos un regalo aquí tienes algunas opciones"
+    const val GIFTS_BUTTON_TEXT = "CERTIFICADO DE REGALO CEMACO"
+
     // Content description strings
     const val CONT_DESC_HEADER_IMG_BACKGROUND = "Imagen de fondo del encabezado"
     const val CONT_DESC_ARROW_DOWN = "Icono de flecha hacia abajo"
     const val CONT_DESC_RINGS = "Icono de anillos"
     const val CONT_DESC_DRESSCODE = "Icono del código de vestimenta"
     const val CONT_DESC_IMAGE_SPOUSES = "Foto de los novios"
+    const val CONT_DESC_ICONO_REGALO = "Icono de regalo"
 }
