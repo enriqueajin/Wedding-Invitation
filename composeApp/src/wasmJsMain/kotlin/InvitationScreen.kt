@@ -1,14 +1,17 @@
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -25,9 +28,13 @@ import weddinginvitation.composeapp.generated.resources.josephsophia
 
 @Composable
 fun Invitation() {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
         Header()
-        Body()
+        Body(modifier = Modifier.align(Alignment.CenterHorizontally))
         Footer()
     }
 }
@@ -77,20 +84,39 @@ fun Header() {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
-fun Body() {
-    Box() {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            InvitationText(modifier = Modifier.align(Alignment.CenterHorizontally))
-            CountDown(modifier = Modifier.align(Alignment.CenterHorizontally))
-            Ceremony()
-            Celebration()
-            DressCode()
-            PhotoGallery()
-            Gifts()
-            Attendance()
-        }
-    }
+fun Body(modifier: Modifier) {
+    InvitationText(modifier)
+    CountDown(modifier)
+    // Ceremony section
+    Event(
+        modifier = modifier,
+        painter = painterResource(Res.drawable.rings),
+        title = Constants.CEREMONY,
+        eventDescription = Constants.CEREMONY_PLACE,
+        eventDate = Constants.CEREMONY_DATE,
+        eventTime = Constants.CEREMONY_TIME,
+        eventTimeSuffix = Constants.CEREMONY_TIME_SUFFIX,
+        eventAddress = Constants.CEREMONY_ADDRESS,
+        buttonText = Constants.CEREMONY_BUTTON_LOCATION
+    )
+    // Celebration section
+    Event(
+        modifier = modifier,
+        painter = painterResource(Res.drawable.champan),
+        title = Constants.CELEBRATION,
+        eventDescription = Constants.CELEBRATION_PLACE,
+        eventDate = Constants.CELEBRATION_DATE,
+        eventTime = Constants.CELEBRATION_TIME,
+        eventTimeSuffix = Constants.CELEBRATION_TIME_SUFFIX,
+        eventAddress = Constants.CELEBRATION_ADDRESS,
+        buttonText = Constants.CEREMONY_BUTTON_LOCATION
+    )
+    DressCode(modifier)
+    PhotoGallery()
+    Gifts()
+    Attendance()
 }
 
 @OptIn(ExperimentalResourceApi::class)
@@ -113,7 +139,7 @@ fun InvitationText(modifier: Modifier) {
         text = Constants.INVITATION_DESCRIPTION,
         modifier = modifier.padding(10.dp),
         textAlign = TextAlign.Center,
-        fontSize = 14.sp,
+        fontSize = 16.sp,
         fontFamily = FontFamily.Default
     )
 }
@@ -178,16 +204,160 @@ fun CountDownItem(timeItem: TimeItem) {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
-fun Ceremony() {
+fun Event(
+    modifier: Modifier,
+    painter: Painter,
+    title: String,
+    eventDescription: String,
+    eventDate: String,
+    eventTime: String,
+    eventTimeSuffix: String,
+    eventAddress: String,
+    buttonText: String
+) {
+    Spacer(Modifier.height(60.dp))
+    Icon(
+        painter = painter,
+        contentDescription = Constants.CONT_DESC_RINGS,
+        modifier = modifier.size(65.dp)
+    )
+    Spacer(Modifier.height(20.dp))
+    Text(
+        text = title,
+        fontSize = 25.sp,
+        modifier = modifier,
+        fontFamily = FontFamily(
+            Font(
+                resource = Res.font.nexaheavy,
+                weight = FontWeight.Bold,
+                style = FontStyle.Normal,
+            )
+        ),
+    )
+    Spacer(Modifier.height(5.dp))
+    Text(
+        text = eventDescription,
+        modifier = modifier.padding(10.dp),
+        textAlign = TextAlign.Center,
+        lineHeight = 30.sp,
+        fontSize = 16.sp,
+        fontFamily = FontFamily.Default
+    )
+    Spacer(Modifier.height(25.dp))
+    Row(
+        modifier = modifier.fillMaxHeight(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = eventDate,
+            modifier = modifier.padding(20.dp),
+            textAlign = TextAlign.Center,
+            fontSize = 25.sp,
+            fontFamily = FontFamily(
+                Font(
+                    resource = Res.font.nexaextralight,
+                    weight = FontWeight.ExtraBold,
+                    style = FontStyle.Normal,
+                )
+            )
+        )
+        Divider(
+            color = Color(0xFFE6E6E6),
+            modifier = modifier.width(2.dp).height(80.dp),
+        )
+        Row(modifier = modifier.padding(20.dp)) {
+            Text(
+                text = eventTime,
+                modifier = modifier,
+                textAlign = TextAlign.Center,
+                fontSize = 25.sp,
+                fontFamily = FontFamily(
+                    Font(
+                        resource = Res.font.nexaextralight,
+                        weight = FontWeight.ExtraBold,
+                        style = FontStyle.Normal,
+                    )
+                )
+            )
+            Spacer(Modifier.size(5.dp))
+            Text(
+                text = eventTimeSuffix,
+                textAlign = TextAlign.Center,
+                modifier = modifier,
+                fontSize = 14.sp,
+                fontFamily = FontFamily(
+                    Font(
+                        resource = Res.font.nexaextralight,
+                        weight = FontWeight.Normal,
+                        style = FontStyle.Normal,
+                    )
+                )
+            )
+        }
+    }
+    Text(
+        text = eventAddress,
+        modifier = modifier.padding(15.dp),
+        textAlign = TextAlign.Center,
+        fontSize = 16.sp,
+        fontFamily = FontFamily.Default
+    )
+    Button(
+        onClick = {},
+        modifier = modifier.padding(12.dp),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color(0xFF408df7),
+            contentColor = Color.White
+        ),
+        shape = RoundedCornerShape(20)
+    ) {
+        Text(
+            text = buttonText,
+            fontSize = 12.sp,
+            modifier = modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+            fontFamily = FontFamily(
+                Font(
+                    resource = Res.font.nexaextralight,
+                    weight = FontWeight.Normal,
+                    style = FontStyle.Normal,
+                )
+            )
+        )
+    }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
-fun Celebration() {
-}
-
-@Composable
-fun DressCode() {
+fun DressCode(modifier: Modifier) {
+    Spacer(Modifier.height(60.dp))
+    Icon(
+        painter = painterResource(Res.drawable.dresscode),
+        contentDescription = Constants.CONT_DESC_DRESSCODE,
+        modifier = modifier.size(65.dp)
+    )
+    Spacer(Modifier.height(20.dp))
+    Text(
+        text = Constants.DRESSCODE,
+        fontSize = 25.sp,
+        modifier = modifier,
+        fontFamily = FontFamily(
+            Font(
+                resource = Res.font.nexaheavy,
+                weight = FontWeight.Bold,
+                style = FontStyle.Normal,
+            )
+        ),
+    )
+    Text(
+        text = Constants.DRESSCODE_DESCRIPTION,
+        modifier = modifier.padding(10.dp),
+        textAlign = TextAlign.Center,
+        lineHeight = 30.sp,
+        fontSize = 16.sp,
+        fontFamily = FontFamily.Default
+    )
 }
 
 @Composable
