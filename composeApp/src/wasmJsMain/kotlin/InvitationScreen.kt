@@ -1,12 +1,10 @@
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,27 +33,35 @@ fun Invitation() {
     ) {
         Header()
         Body(modifier = Modifier.align(Alignment.CenterHorizontally))
-        Footer()
+        Footer(modifier = Modifier.align(Alignment.CenterHorizontally))
     }
 }
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun Header() {
-    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.TopCenter
+    ) {
         Image(
             painter = painterResource(Res.drawable.header),
             contentDescription = Constants.CONT_DESC_HEADER_IMG_BACKGROUND,
-            modifier = Modifier.height(300.dp),
+            modifier = Modifier.height(500.dp),
             contentScale = ContentScale.Crop
         )
         Column(
+            modifier = Modifier.fillMaxWidth().height(300.dp),
             verticalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier.height(300.dp)
         ) {
-            Column {
+            Spacer(Modifier.height(20.dp))
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(
                     text = Constants.HEADER_TITLE,
+                    color = Color.White,
                     fontSize = 54.sp,
                     fontFamily = FontFamily(
                         Font(
@@ -67,8 +73,15 @@ fun Header() {
                 )
                 Text(
                     text = Constants.HEADER_SPOUSES_NAMES,
-                    fontSize = 18.sp,
-                    fontFamily = FontFamily.Default,
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontFamily = FontFamily(
+                        Font(
+                            resource = Res.font.josephsophia,
+                            weight = FontWeight.Bold,
+                            style = FontStyle.Normal,
+                        )
+                    ),
                 )
             }
             Icon(
@@ -79,7 +92,7 @@ fun Header() {
                     .size(20.dp)
                     .align(Alignment.CenterHorizontally)
             )
-            Spacer(modifier = Modifier.height(0.dp))
+            Spacer(modifier = Modifier.height(100.dp))
         }
     }
 }
@@ -110,13 +123,14 @@ fun Body(modifier: Modifier) {
         eventDate = Constants.CELEBRATION_DATE,
         eventTime = Constants.CELEBRATION_TIME,
         eventTimeSuffix = Constants.CELEBRATION_TIME_SUFFIX,
-        eventAddress = Constants.CELEBRATION_ADDRESS,
+        eventAddress =
+        Constants.CELEBRATION_ADDRESS,
         buttonText = Constants.CEREMONY_BUTTON_LOCATION
     )
     DressCode(modifier)
     PhotoGallery(modifier)
     Gifts(modifier)
-    Attendance()
+    Attendance(modifier)
 }
 
 @OptIn(ExperimentalResourceApi::class)
@@ -137,7 +151,7 @@ fun InvitationText(modifier: Modifier) {
     )
     Text(
         text = Constants.INVITATION_DESCRIPTION,
-        modifier = modifier.padding(10.dp),
+        modifier = modifier.padding(vertical = 10.dp, horizontal = 25.dp),
         textAlign = TextAlign.Center,
         fontSize = 16.sp,
         fontFamily = FontFamily.Default
@@ -160,7 +174,7 @@ fun CountDown(modifier: Modifier) {
 
     Spacer(modifier = Modifier.height(20.dp))
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().padding(horizontal = 25.dp),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         val countDownList = listOf(
@@ -192,7 +206,7 @@ fun CountDownItem(timeItem: TimeItem) {
             modifier = Modifier
                 .size(50.dp)
                 .clip(CircleShape)
-                .background(Color(0xFFBECBDB)),
+                .background(Color(0xFFfcd49f)),
             contentAlignment = Alignment.Center
         ) {
             Text(text = timeItem.time)
@@ -299,7 +313,7 @@ fun Event(
     }
     Text(
         text = eventAddress,
-        modifier = modifier.padding(15.dp),
+        modifier = modifier.padding(vertical = 15.dp, horizontal = 25.dp),
         textAlign = TextAlign.Center,
         fontSize = 16.sp,
         fontFamily = FontFamily.Default
@@ -308,7 +322,7 @@ fun Event(
         onClick = {},
         modifier = modifier.padding(12.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = Color(0xFF408df7),
+            backgroundColor = Color(0xFFACBA90),
             contentColor = Color.White
         ),
         shape = RoundedCornerShape(20)
@@ -334,12 +348,12 @@ fun DressCode(modifier: Modifier) {
     Spacer(Modifier.height(60.dp))
     Icon(
         painter = painterResource(Res.drawable.dresscode),
-        contentDescription = Constants.CONT_DESC_DRESSCODE,
+        contentDescription = Constants.CONT_DESC_DRESS_CODE,
         modifier = modifier.size(65.dp)
     )
     Spacer(Modifier.height(20.dp))
     Text(
-        text = Constants.DRESSCODE,
+        text = Constants.DRESS_CODE,
         fontSize = 25.sp,
         modifier = modifier,
         fontFamily = FontFamily(
@@ -351,7 +365,7 @@ fun DressCode(modifier: Modifier) {
         ),
     )
     Text(
-        text = Constants.DRESSCODE_DESCRIPTION,
+        text = Constants.DRESS_CODE_DESCRIPTION,
         modifier = modifier.padding(10.dp),
         textAlign = TextAlign.Center,
         lineHeight = 30.sp,
@@ -374,7 +388,7 @@ fun PhotoGallery(modifier: Modifier) {
         painter = painterResource(Res.drawable.mainphoto),
         contentDescription = Constants.CONT_DESC_IMAGE_SPOUSES,
         modifier = modifier.padding(horizontal = 20.dp)
-            .fillMaxWidth()
+            .widthIn(0.dp, 1500.dp)
             .clip(RoundedCornerShape(10.dp))
             .height(200.dp),
         contentScale = ContentScale.Crop
@@ -390,7 +404,11 @@ fun PhotoGallery(modifier: Modifier) {
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun GalleryRow(modifier: Modifier, photo1: DrawableResource, photo2: DrawableResource) {
-    Row(modifier = modifier.padding(horizontal = 20.dp)) {
+    Row(
+        modifier = modifier
+            .padding(horizontal = 20.dp)
+            .widthIn(0.dp, 1500.dp)
+    ) {
         Image(
             painter = painterResource(photo1),
             contentDescription = Constants.CONT_DESC_IMAGE_SPOUSES,
@@ -419,7 +437,7 @@ fun Gifts(modifier: Modifier) {
     Spacer(Modifier.height(65.dp))
     Icon(
         painter = painterResource(Res.drawable.gift),
-        contentDescription = Constants.CONT_DESC_ICONO_REGALO,
+        contentDescription = Constants.CONT_DESC_GIFT_ICON,
         modifier = modifier.size(65.dp)
     )
     Spacer(Modifier.height(20.dp))
@@ -467,10 +485,182 @@ fun Gifts(modifier: Modifier) {
 
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
-fun Attendance() {
+fun Attendance(modifier: Modifier) {
+    Spacer(Modifier.height(70.dp))
+    Text(
+        text = Constants.ATTENDANCE,
+        fontSize = 25.sp,
+        textAlign = TextAlign.Center,
+        lineHeight = 35.sp,
+        modifier = modifier.padding(horizontal = 50.dp),
+        fontFamily = FontFamily(
+            Font(
+                resource = Res.font.nexaheavy,
+                weight = FontWeight.Bold,
+                style = FontStyle.Normal,
+            )
+        ),
+    )
+    Text(
+        text = Constants.ATTENDANCE_DESCRIPTION,
+        modifier = modifier.padding(vertical = 20.dp, horizontal = 45.dp),
+        fontSize = 16.sp,
+        fontFamily = FontFamily.Default,
+        textAlign = TextAlign.Center
+    )
+    Divider(
+        color = Color.LightGray,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .padding(horizontal = 130.dp)
+    )
+    Text(
+        text = Constants.ATTENDANCE_GUESTS_NUMBER,
+        fontSize = 18.sp,
+        modifier = modifier.padding(vertical = 20.dp),
+        fontFamily = FontFamily(
+            Font(
+                resource = Res.font.nexaheavy,
+                weight = FontWeight.Bold,
+                style = FontStyle.Normal,
+            )
+        ),
+    )
+    Divider(
+        color = Color.LightGray,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .padding(horizontal = 130.dp)
+    )
+    var selected by rememberSaveable { mutableStateOf(Constants.ATTENDANCE_YES) }
+    var name by rememberSaveable { mutableStateOf("") }
+    var attendancesAmount by rememberSaveable { mutableStateOf("") }
+    var message by rememberSaveable { mutableStateOf("") }
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 35.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+    ) {
+        AttendanceRadioButtonList(selected) {
+            selected = it
+        }
+    }
+    OutlinedTextField(
+        value = name,
+        onValueChange = { name = it },
+        label = { Text(text = Constants.ATTENDANCE_FIELD_NAME) },
+        modifier = modifier.fillMaxWidth().padding(horizontal = 20.dp),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(0xFF408df7),
+            focusedLabelColor = Color(0xFF408df7)
+        ),
+    )
+    OutlinedTextField(
+        value = attendancesAmount,
+        onValueChange = { attendancesAmount = it },
+        label = { Text(text = Constants.ATTENDANCE_FIELD_AMOUNT_ATTENDANCES) },
+        modifier = modifier.fillMaxWidth().padding(horizontal = 20.dp),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(0xFF408df7),
+            focusedLabelColor = Color(0xFF408df7)
+        )
+    )
+    OutlinedTextField(
+        value = message,
+        onValueChange = { message = it },
+        label = { Text(text = Constants.ATTENDANCE_FIELD_MESSAGE) },
+        modifier = modifier.fillMaxWidth().padding(horizontal = 20.dp),
+        minLines = 5,
+        maxLines = 5,
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(0xFF408df7),
+            focusedLabelColor = Color(0xFF408df7)
+        )
+    )
+    Button(
+        onClick = {},
+        modifier = modifier.padding(12.dp),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color(0xFF408df7),
+            contentColor = Color.White
+        ),
+        shape = RoundedCornerShape(20)
+    ) {
+        Text(
+            text = Constants.ATTENDANCE_BUTTON_TEXT,
+            fontSize = 12.sp,
+            modifier = modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+            fontFamily = FontFamily(
+                Font(
+                    resource = Res.font.nexaextralight,
+                    weight = FontWeight.Normal,
+                    style = FontStyle.Normal,
+                )
+            )
+        )
+    }
 }
 
 @Composable
-fun Footer() {
+fun AttendanceRadioButtonList(name: String, onItemClick: (String) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        val radioButtonText = Constants.ATTENDANCE_YES
+        RadioButton(
+            selected = name == radioButtonText,
+            onClick = { onItemClick(radioButtonText) },
+            modifier = Modifier.size(20.dp),
+            colors = RadioButtonDefaults.colors(selectedColor = Color(0xFF408df7))
+        )
+        Spacer(modifier = Modifier.width(5.dp))
+        Text(text = radioButtonText)
+    }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        val radioButtonText = Constants.ATTENDANCE_NO
+        RadioButton(
+            selected = name == radioButtonText,
+            onClick = { onItemClick(radioButtonText) },
+            modifier = Modifier.size(20.dp),
+            colors = RadioButtonDefaults.colors(selectedColor = Color(0xFF408df7))
+        )
+        Spacer(modifier = Modifier.width(5.dp))
+        Text(text = radioButtonText)
+    }
+}
+
+@OptIn(ExperimentalResourceApi::class)
+@Composable
+fun Footer(modifier: Modifier) {
+    Spacer(Modifier.height(60.dp))
+    Text(
+        text = Constants.FOOTER_TITLE,
+        modifier = modifier,
+        fontSize = 58.sp,
+        fontFamily = FontFamily(
+            Font(
+                resource = Res.font.antaradistance,
+                weight = FontWeight.Bold,
+                style = FontStyle.Normal,
+            )
+        ),
+    )
+    Spacer(Modifier.height(5.dp))
+    Text(
+        text = Constants.FOOTER_SPOUSES_NAMES,
+        modifier = modifier,
+        fontSize = 50.sp,
+        fontFamily = FontFamily(
+            Font(
+                resource = Res.font.miltononebold,
+                weight = FontWeight.Normal,
+                style = FontStyle.Normal,
+            )
+        ),
+    )
+    Spacer(Modifier.height(85.dp))
 }
