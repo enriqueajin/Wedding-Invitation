@@ -1,8 +1,18 @@
+package screens
+
+import utils.CustomCountDownTimer
+import utils.CustomHttpClient
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -17,8 +27,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import io.ktor.client.request.*
+import io.ktor.http.*
+import kotlinx.browser.window
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.datetime.*
+import models.AttendanceModel
+import models.TimeItem
+import models.TimeUnits
 import org.jetbrains.compose.resources.*
+import utils.Constants
 import weddinginvitation.composeapp.generated.resources.*
 import weddinginvitation.composeapp.generated.resources.Res
 import weddinginvitation.composeapp.generated.resources.header
@@ -517,8 +538,15 @@ fun Attendance(modifier: Modifier) {
             .height(1.dp)
             .padding(horizontal = 130.dp)
     )
+    val url = window.location.search
+    val params = parseQueryString(
+        url,
+        startIndex = 1 // Starting from 0 to remove "?"
+    )
+    val guests = if (!params.isEmpty()) params["guests"]?.toInt() else 0
+
     Text(
-        text = Constants.ATTENDANCE_GUESTS_NUMBER,
+        text = "${Constants.ATTENDANCE_GUESTS_NUMBER_VALID_FOR} $guests ${Constants.ATTENDANCE_GUESTS_NUMBER_GUESTS}",
         fontSize = 18.sp,
         modifier = modifier.padding(vertical = 20.dp),
         fontFamily = FontFamily(
@@ -536,10 +564,21 @@ fun Attendance(modifier: Modifier) {
             .height(1.dp)
             .padding(horizontal = 130.dp)
     )
+
+    // Manage the attendance form inputs and RadioButtons
     var selected by rememberSaveable { mutableStateOf(Constants.ATTENDANCE_YES) }
-    var name by rememberSaveable { mutableStateOf("") }
-    var attendancesAmount by rememberSaveable { mutableStateOf("") }
-    var message by rememberSaveable { mutableStateOf("") }
+    var guestName by rememberSaveable { mutableStateOf("") }
+    var attendeesQuantity by rememberSaveable { mutableStateOf(guests.toString()) }
+    var guestMessage by rememberSaveable { mutableStateOf("") }
+
+
+    var statusCode by rememberSaveable { mutableIntStateOf(404) }
+    var show by rememberSaveable { mutableStateOf(false) }
+    var showAttendeesDialog by rememberSaveable { mutableStateOf(false) }
+
+    // Get the DropDown Menu's option list
+    val dropDownList = getDropDownList(guests.toString())
+    println(dropDownList)
 
     Row(
         modifier = modifier
@@ -552,8 +591,8 @@ fun Attendance(modifier: Modifier) {
         }
     }
     OutlinedTextField(
-        value = name,
-        onValueChange = { name = it },
+        value = guestName,
+        onValueChange = { guestName = it },
         label = { Text(text = Constants.ATTENDANCE_FIELD_NAME) },
         modifier = modifier.fillMaxWidth().padding(horizontal = 20.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -562,18 +601,31 @@ fun Attendance(modifier: Modifier) {
         ),
     )
     OutlinedTextField(
-        value = attendancesAmount,
-        onValueChange = { attendancesAmount = it },
+        value = attendeesQuantity,
+        onValueChange = { attendeesQuantity = it },
+        readOnly = true,
         label = { Text(text = Constants.ATTENDANCE_FIELD_AMOUNT_ATTENDANCES) },
-        modifier = modifier.fillMaxWidth().padding(horizontal = 20.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+        trailingIcon = { Icon(imageVector = Icons.Filled.ArrowDropDown, "") },
+        interactionSource = remember { MutableInteractionSource() }
+            // Since normal "clickable" has no effect through modifier, used an interactionSource instead
+            .also { interactionSource ->
+                LaunchedEffect(interactionSource) {
+                    interactionSource.interactions.collect {
+                        if (it is PressInteraction.Press) {
+                            showAttendeesDialog = true
+                        }
+                    }
+                }
+            },
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = Color(0xFF408df7),
             focusedLabelColor = Color(0xFF408df7)
-        )
+        ),
     )
     OutlinedTextField(
-        value = message,
-        onValueChange = { message = it },
+        value = guestMessage,
+        onValueChange = { guestMessage = it },
         label = { Text(text = Constants.ATTENDANCE_FIELD_MESSAGE) },
         modifier = modifier.fillMaxWidth().padding(horizontal = 20.dp),
         minLines = 5,
@@ -581,16 +633,35 @@ fun Attendance(modifier: Modifier) {
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = Color(0xFF408df7),
             focusedLabelColor = Color(0xFF408df7)
-        )
+        ),
+    )
+    AttendeesQuantityDialog(
+        show = showAttendeesDialog,
+        attendeesAllowed = dropDownList,
+        onDismiss = { showAttendeesDialog = false },
+        onQuantityChanged = { newQuantity -> attendeesQuantity = newQuantity }
     )
     Button(
-        onClick = {},
+        onClick = {
+            submitForm(
+                attendance = AttendanceModel(
+                    isAttending = selected == Constants.ATTENDANCE_YES,
+                    name = guestName,
+                    attendeesQuantity = attendeesQuantity.toInt(),
+                    message = guestMessage,
+                ), onStatusCodeReceived = { status -> statusCode = status }
+            )
+            guestName = ""
+            guestMessage = ""
+            show = true
+        },
         modifier = modifier.padding(12.dp),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color(0xFF408df7),
             contentColor = Color.White
         ),
-        shape = RoundedCornerShape(20)
+        shape = RoundedCornerShape(20),
+        enabled = isFormValid(guestName, attendeesQuantity)
     ) {
         Text(
             text = Constants.ATTENDANCE_BUTTON_TEXT,
@@ -604,6 +675,113 @@ fun Attendance(modifier: Modifier) {
                 )
             )
         )
+    }
+    FormDialog(
+        status = statusCode,
+        show = show,
+        onDismiss = { show = false },
+    )
+
+}
+
+fun getDropDownList(attendeesQuantity: String): List<String> {
+    var maxAttendees = attendeesQuantity.toInt()
+    val intDropDownList = mutableListOf<Int>()
+
+    while (maxAttendees > 0) {
+        intDropDownList.add(maxAttendees)
+        maxAttendees -= 1
+    }
+    val stringDropDownList = intDropDownList.toList().map { it.toString() }
+    return stringDropDownList.reversed()
+}
+
+fun isFormValid(name: String, attendeesQuantity: String): Boolean {
+    return name.isNotBlank() && attendeesQuantity.matches(Regex("^\\d+\$"))
+}
+
+fun submitForm(attendance: AttendanceModel, onStatusCodeReceived: (Int) -> Unit) {
+    val client = CustomHttpClient.getClient()
+
+    CoroutineScope(Dispatchers.Default).launch {
+        val response = client.post("http://localhost:8000/attendees") {
+            contentType(ContentType.Application.Json)
+            setBody(attendance)
+        }
+        onStatusCodeReceived(response.status.value)
+    }
+}
+
+@Composable
+fun FormDialog(
+    status: Int,
+    show: Boolean,
+    onDismiss: () -> Unit,
+) {
+    if (show) {
+        Dialog(onDismissRequest = { onDismiss() }) {
+            Column(
+                modifier = Modifier
+                    .widthIn(250.dp, 500.dp)
+                    .height(500.dp)
+                    .background(Color.White)
+                    .padding(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                if (status == 201) {
+                    Text("¡Gracias por tu confirmación!")
+
+                } else {
+                    Text("Ha ocurrido un error. Por favor intenta de nuevo.")
+                }
+                Button(onClick = { onDismiss() }) {
+                    Text("Aceptar")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AttendeesQuantityDialog(
+    show: Boolean,
+    attendeesAllowed: List<String>,
+    onDismiss: () -> Unit,
+    onQuantityChanged: (String) -> Unit
+) {
+    if (show) {
+        Dialog(onDismissRequest = { onDismiss() }) {
+            Column(
+                modifier = Modifier
+                    .widthIn(250.dp, 500.dp)
+                    .height(500.dp)
+                    .background(Color.White)
+                    .padding(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(attendeesAllowed) {
+                        SelectAttendeesItem(number = it) { value ->
+                            onQuantityChanged(value)
+                            onDismiss()
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SelectAttendeesItem(number: String, onItemClicked: (String) -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth().clickable { onItemClicked(number) },
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(text = number, modifier = Modifier.padding(vertical = 5.dp, horizontal = 10.dp))
+        Divider(modifier = Modifier.fillMaxWidth().height(1.dp))
     }
 }
 

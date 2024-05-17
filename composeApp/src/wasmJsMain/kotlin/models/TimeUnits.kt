@@ -1,3 +1,5 @@
+package models
+
 data class TimeUnits(
     var days: Long = 0,
     var hours: Long = 0,
