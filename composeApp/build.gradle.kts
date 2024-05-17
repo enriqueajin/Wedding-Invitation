@@ -4,6 +4,8 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.ktor)
+    alias(libs.plugins.serialization)
 }
 
 kotlin {
@@ -23,9 +25,8 @@ kotlin {
         }
         binaries.executable()
     }
-    
-    sourceSets {
 
+    sourceSets {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -35,12 +36,13 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(compose.animationGraphics)
             implementation(compose.animation)
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0-RC.2")
+            implementation(libs.kotlin.datetime)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.js)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.logging)
+            implementation(libs.ktor.serialization.json)
         }
-    }
-
-    repositories {
-        mavenCentral()
     }
 }
 

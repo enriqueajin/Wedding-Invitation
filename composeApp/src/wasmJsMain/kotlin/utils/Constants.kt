@@ -1,3 +1,5 @@
+package utils
+
 object Constants {
     const val DAYS = "DÍAS"
     const val HOURS = "HORAS"
@@ -41,7 +43,8 @@ object Constants {
     // Attendance
     const val ATTENDANCE = "CONFIRMAR ASISTENCIA"
     const val ATTENDANCE_DESCRIPTION = "Por favor, confirma tu asistencia"
-    const val ATTENDANCE_GUESTS_NUMBER = "VÁLIDO PARA 2 INVITADOS"
+    const val ATTENDANCE_GUESTS_NUMBER_VALID_FOR = "VÁLIDO PARA"
+    const val ATTENDANCE_GUESTS_NUMBER_GUESTS = "INVITADOS"
     const val ATTENDANCE_YES = "¡Sí, allí estaré!"
     const val ATTENDANCE_NO = "No podré asistir"
     const val ATTENDANCE_FIELD_NAME = "Nombre y apellido"
