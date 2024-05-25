@@ -1,6 +1,6 @@
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
-import screens.Invitation
+import ui.Invitation
 
 @Composable
 fun App() {
